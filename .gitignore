@@ -1,0 +1,39 @@
+# Environment variables
+.env
+
+# Input files (resume + job descriptions)
+input/*
+
+# Keep the folder structure
+!input/.gitkeep
+
+# Generated outputs
+output/*
+
+# Keep the folder structure
+!output/.gitkeep
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+llm_agent/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
