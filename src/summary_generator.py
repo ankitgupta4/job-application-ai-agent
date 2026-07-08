@@ -1,6 +1,15 @@
 from schemas import ResumeAnalysis
 
 
+def _format_list(items: list[str]) -> str:
+    if not items:
+        return "- None"
+
+    return "\n".join(
+        f"- {item}" for item in items
+    )
+
+
 def generate_summary(
     analysis: ResumeAnalysis,
     company: str,
@@ -17,7 +26,10 @@ def generate_summary(
 {role}
 
 ## Recommendation
-{analysis.recommendation}
+{analysis.recommendation.value}
+
+## Confidence Score
+{analysis.confidence_score}
 
 ## Overall Match Score
 {analysis.overall_match_score}
@@ -28,23 +40,53 @@ def generate_summary(
 ## Experience Match
 {analysis.experience_match_score}
 
+## Career Direction Score
+{analysis.career_direction_score}
+
+## Fit Category
+{analysis.fit_category.value}
+
+## Role Alignment
+
+{analysis.role_alignment}
+
 ## Strong Matches
 
-{chr(10).join(f"- {item}" for item in analysis.strong_matches)}
+{_format_list(analysis.strong_matches)}
+
+## Transferable Matches
+
+{_format_list(analysis.transferable_matches)}
 
 ## Missing Skills
 
-{chr(10).join(f"- {item}" for item in analysis.missing_skills)}
+{_format_list(analysis.missing_skills)}
 
-## Gaps
+## Learnable Gaps
 
-{chr(10).join(f"- {item}" for item in analysis.gaps)}
+{_format_list(analysis.learnable_gaps)}
+
+## Serious Gaps
+
+{_format_list(analysis.serious_gaps)}
+
+## Deal Breakers
+
+{_format_list(analysis.deal_breakers)}
+
+## Matched Keywords
+
+{_format_list(analysis.matched_keywords)}
 
 ## Missing Keywords
 
-{chr(10).join(f"- {item}" for item in analysis.missing_keywords)}
+{_format_list(analysis.missing_keywords)}
 
 ## Reasoning
 
 {analysis.reasoning}
+
+## Application Strategy
+
+{analysis.application_strategy}
 """

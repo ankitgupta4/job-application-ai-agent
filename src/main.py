@@ -2,9 +2,11 @@ from pprint import pprint
 
 from config import RESUME_FILE
 from config import JD_FILE
+from config import CANDIDATE_PROFILE_FILE
+from jd_profile_reader import read_candidate_profile
 
 from resume_reader import read_resume
-from jd_reader import read_job_description
+from jd_profile_reader import read_job_description
 
 from analyzer import analyze_resume_against_jd
 
@@ -25,9 +27,13 @@ def main():
 
     jd_data = read_job_description(JD_FILE)
 
+
+    candidate_profile_text = read_candidate_profile(CANDIDATE_PROFILE_FILE)
+
     analysis = analyze_resume_against_jd(
         resume_text,
-        jd_data["full_text"]
+        jd_data["full_text"],
+        candidate_profile_text
     )
 
     pprint(

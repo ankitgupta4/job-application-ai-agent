@@ -21,3 +21,7 @@ def read_job_description(file_path: str):
         "role": role,
         "full_text": content
     }
+
+def read_candidate_profile(file_path: str) -> str:
+    with open(file_path, "r", encoding="utf-8") as f:
+        return f.read()

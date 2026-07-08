@@ -10,3 +10,4 @@ OUTPUT_FOLDER = "output"
 
 RESUME_FILE = os.path.join(INPUT_FOLDER, "resume.docx")
 JD_FILE = os.path.join(INPUT_FOLDER, "job_description.txt")
+CANDIDATE_PROFILE_FILE = os.path.join(INPUT_FOLDER, "candidate_profile.yaml")
