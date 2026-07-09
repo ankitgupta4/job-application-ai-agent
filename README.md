@@ -1,164 +1,73 @@
 # Job Agent
 
-Job Agent is a local job-fit analysis tool. It compares a job description against:
+Job Agent is a local job-fit analysis tool. It compares a job description with your resume and candidate profile, then returns an `APPLY`, `MAYBE`, or `SKIP` recommendation with scores, reasoning, matches, gaps, and keywords.
 
-- your resume
-- your broader candidate profile
-- the role/company context provided from the UI
+The project has:
 
-It then returns a structured `APPLY`, `MAYBE`, or `SKIP` recommendation with fit scores, reasoning, strengths, transferable matches, gaps, and keywords.
-
-The project currently has two parts:
-
-```text
-src/        Python backend, Gemini analysis, FastAPI API
-frontend/  React + TypeScript + Vite frontend
-```
+- Python/FastAPI backend in `src/`
+- React + TypeScript + Vite frontend in `frontend/`
 
 ## Current scope
 
-This version implements Stage 1: job-fit decisioning.
+This version covers Stage 1: job-fit decisioning.
 
 It answers:
 
-- Should I apply to this role?
-- How strong is the match?
+- Should I apply?
+- How strong is the fit?
 - Why was the recommendation made?
-- What are the strong matches?
-- Which gaps are learnable versus serious?
-- Are there any deal breakers?
+- What are the strengths, transferable matches, learnable gaps, serious gaps, and deal breakers?
 
-ATS gap analysis, resume tailoring, and cover letter generation are planned as later stages.
+ATS gap analysis, resume tailoring, and cover letter generation are planned later.
 
-## Assumptions made
+## Assumptions
 
-- The app is intended for local personal use.
-- The backend uses a local resume file at `input/resume.docx`.
-- The backend uses a local candidate profile file at `input/candidate_profile.yaml`.
-- The frontend only uploads or accepts the job description text.
-- The candidate profile and resume are private and should not be pushed to GitHub.
-- The current analyzer is designed for Indian technology hiring context, where exact tech-stack matching is not always mandatory.
-- Missing secondary tools should not automatically lead to `SKIP`.
-- The decision stage is intentionally separate from ATS/resume-tailoring stages.
-- `application_strategy` may be returned by the backend for future automation, but it is not shown on the current frontend page.
+- The app is for local personal use.
+- Resume is read from `input/resume.docx`.
+- Candidate profile is read from `input/candidate_profile.yaml`.
+- JD is entered or uploaded from the frontend.
+- Private files like resume, profile, JD, `.env`, and outputs are not committed.
+- The analyzer considers Indian hiring context, where exact tech-stack match is not always required.
 
-## Project structure
+## Setup
 
-```text
-Job_Agent/
-├── src/
-│   ├── api.py                 # FastAPI backend endpoint
-│   ├── analyzer.py            # Gemini prompt and analysis call
-│   ├── config.py              # File paths and environment loading
-│   ├── file_manager.py        # Output file helpers for CLI flow
-│   ├── gemini_client.py       # Gemini client setup
-│   ├── jd_profile_reader.py   # JD and candidate profile readers
-│   ├── main.py                # CLI/script flow
-│   ├── resume_reader.py       # Resume .docx reader
-│   ├── schemas.py             # Pydantic response schemas
-│   └── summary_generator.py   # Markdown summary generator
-├── frontend/
-│   ├── src/
-│   │   ├── App.tsx            # Main React UI
-│   │   ├── main.tsx           # React entry point
-│   │   ├── styles.css         # Tailwind/global styles
-│   │   └── vite-env.d.ts      # Vite TypeScript environment types
-│   ├── index.html             # Frontend HTML entry
-│   ├── package.json           # Frontend dependencies/scripts
-│   ├── package-lock.json      # Locked frontend dependency versions
-│   ├── tsconfig.json          # TypeScript config
-│   └── vite.config.ts         # Vite/Tailwind/React config
-├── input/
-│   └── .gitkeep               # Private input folder placeholder
-├── output/
-│   └── .gitkeep               # Generated output folder placeholder
-├── .env.example               # Environment variable template
-├── .gitignore
-├── README.md
-└── requirements.txt           # Backend dependencies
-```
-
-## Files that must stay local
-
-The following files may contain private or sensitive information and should not be pushed:
-
-```text
-.env
-input/resume.docx
-input/job_description.txt
-input/candidate_profile.yaml
-output/
-frontend/node_modules/
-frontend/dist/
-*.tsbuildinfo
-```
-
-The `.gitignore` is configured to keep these out of Git.
-
-## Requirements
-
-### Backend
-
-- Python 3.10+
-- Gemini API key
-- Python packages from `requirements.txt`
-
-### Frontend
-
-- Node.js
-- npm
-
-Recommended Node version: use a current LTS version. Vite requires a modern Node runtime.
-
-Check your versions:
-
-```bash
-python3 --version
-node --version
-npm --version
-```
-
-## Local setup
-
-### 1. Clone the repository
+### 1. Clone repo
 
 ```bash
 git clone <YOUR_REPO_URL>
 cd Job_Agent
 ```
 
-### 2. Create the environment file
+### 2. Create `.env`
 
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` and set:
+Set:
 
 ```env
 GEMINI_API_KEY=YOUR_ACTUAL_API_KEY
 ```
 
-### 3. Add local private input files
+### 3. Add private input files
 
-Create or place these files locally:
+Create these locally:
 
 ```text
 input/resume.docx
 input/candidate_profile.yaml
 ```
 
-The frontend will provide the job description, so `input/job_description.txt` is only required if you use the CLI/script flow through `src/main.py`.
+`input/job_description.txt` is only needed for the old CLI flow.
 
 ### 4. Install backend dependencies
-
-From the project root:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-If you prefer a virtual environment:
+Optional virtual environment:
 
 ```bash
 python3 -m venv .venv
@@ -173,50 +82,38 @@ cd frontend
 npm install
 ```
 
-Then return to the project root if needed:
+## Run locally
 
-```bash
-cd ..
-```
+Use two terminals.
 
-## Running locally
+### Backend
 
-You need two terminals: one for the backend and one for the frontend.
-
-### Terminal 1: Start the backend API
-
-From the project root:
+From project root:
 
 ```bash
 PYTHONPATH=src uvicorn api:app --reload
 ```
 
-Backend will run at:
+Backend:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-API docs are available at:
+API docs:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-Health check:
-
-```text
-http://127.0.0.1:8000/api/health
-```
-
-### Terminal 2: Start the frontend
+### Frontend
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Frontend will usually run at:
+Frontend:
 
 ```text
 http://localhost:5173
@@ -224,223 +121,33 @@ http://localhost:5173
 
 ## How it works
 
-### Frontend flow
+1. User enters company, role, and JD in the frontend.
+2. Frontend calls `POST /api/analyze`.
+3. Backend reads local resume and candidate profile.
+4. Backend sends resume + profile + JD context to Gemini.
+5. Response is parsed into the `ResumeAnalysis` schema.
+6. Frontend displays recommendation, scores, reasoning, matches, gaps, and keywords.
 
-The frontend lets you provide:
+## Useful checks
 
-- company name
-- role title
-- job description text, either pasted or uploaded as a `.txt` file
-
-When you click `Analyze`, the frontend sends this request to the backend:
-
-```http
-POST /api/analyze
-```
-
-with data like:
-
-```json
-{
-  "company": "Example Company",
-  "role": "Senior AI Engineer",
-  "job_description": "Full job description text..."
-}
-```
-
-### Backend flow
-
-The backend:
-
-1. Reads `input/resume.docx`.
-2. Reads `input/candidate_profile.yaml`.
-3. Combines company, role, and JD text into a single job context.
-4. Sends resume + candidate profile + job context to Gemini.
-5. Parses the response into the `ResumeAnalysis` Pydantic schema.
-6. Returns structured JSON to the frontend.
-
-### Output shown on the frontend
-
-The current UI shows:
-
-- recommendation: `APPLY`, `MAYBE`, or `SKIP`
-- confidence score
-- overall match score
-- skills match score
-- experience match score
-- career direction score
-- fit category
-- reasoning
-- role alignment
-- strong matches
-- transferable matches
-- learnable gaps
-- serious gaps
-- deal breakers
-- missing skills
-- matched keywords
-- missing keywords
-
-## Optional CLI/script flow
-
-The original CLI/script flow still exists.
-
-It expects:
-
-```text
-input/resume.docx
-input/job_description.txt
-input/candidate_profile.yaml
-```
-
-Run:
-
-```bash
-PYTHONPATH=src python3 src/main.py
-```
-
-It saves results under:
-
-```text
-output/<company>-<role>/
-```
-
-This includes:
-
-```text
-analysis.json
-summary.md
-original_jd.txt
-```
-
-## Useful checks before committing
-
-### Backend syntax check
+Backend syntax check:
 
 ```bash
 python3 -m py_compile src/api.py src/analyzer.py src/schemas.py src/main.py
 ```
 
-### Frontend production build
+Frontend production build:
 
 ```bash
 cd frontend
 npm run build
 ```
 
-The generated `frontend/dist/` folder should not be committed.
-
-### Git safety check
-
-Before pushing:
+Git safety check:
 
 ```bash
 git status --short
 git status --ignored --short
-```
-
-Make sure these are not staged:
-
-```text
-.env
-input/resume.docx
-input/candidate_profile.yaml
-input/job_description.txt
-output/
-frontend/node_modules/
-frontend/dist/
-frontend/tsconfig.tsbuildinfo
-```
-
-## Common issues
-
-### `GEMINI_API_KEY not set`
-
-Create `.env` from `.env.example` and set your API key:
-
-```bash
-cp .env.example .env
-```
-
-Then edit:
-
-```env
-GEMINI_API_KEY=YOUR_ACTUAL_API_KEY
-```
-
-### Backend cannot find resume or profile
-
-Ensure these files exist locally:
-
-```text
-input/resume.docx
-input/candidate_profile.yaml
-```
-
-### Frontend cannot connect to backend
-
-Make sure the backend is running:
-
-```bash
-PYTHONPATH=src uvicorn api:app --reload
-```
-
-The frontend expects the backend at:
-
-```text
-http://127.0.0.1:8000
-```
-
-If you need a different backend URL, create a frontend environment file later and set:
-
-```env
-VITE_API_BASE_URL=http://your-backend-url
-```
-
-### TypeScript build cache appears
-
-`frontend/tsconfig.tsbuildinfo` is generated by TypeScript. It is ignored and should not be committed.
-
-## Current limitations
-
-- JD upload currently supports text-style upload only.
-- Resume is read from local `input/resume.docx`; it is not uploaded through the UI yet.
-- Candidate profile is read from local `input/candidate_profile.yaml`; it is not edited through the UI yet.
-- ATS gap analysis is not implemented yet.
-- Resume rewriting and cover letter generation are not implemented yet.
-- The app is currently designed for local use, not public deployment.
-
-## Planned next stages
-
-Possible next improvements:
-
-1. ATS gap analysis as a separate stage.
-2. Resume tailoring suggestions.
-3. Cover letter generation.
-4. Upload resume from frontend.
-5. Edit/manage candidate profile from frontend.
-6. Save analysis history.
-7. Export analysis as PDF or Markdown.
-8. Add authentication if deployed publicly.
-
-## Commit guidance
-
-Recommended files to commit:
-
-```text
-.env.example
-.gitignore
-README.md
-requirements.txt
-src/
-frontend/index.html
-frontend/package.json
-frontend/package-lock.json
-frontend/tsconfig.json
-frontend/vite.config.ts
-frontend/src/
-input/.gitkeep
-output/.gitkeep
 ```
 
 Do not commit:
@@ -450,8 +157,29 @@ Do not commit:
 input/resume.docx
 input/job_description.txt
 input/candidate_profile.yaml
-output/*
+output/
 frontend/node_modules/
 frontend/dist/
 *.tsbuildinfo
 ```
+
+## Important files
+
+```text
+src/api.py              FastAPI API
+src/analyzer.py         Gemini prompt and analysis logic
+src/schemas.py          Pydantic response schema
+src/resume_reader.py    Reads resume.docx
+src/jd_profile_reader.py Reads JD/profile text
+frontend/src/App.tsx    Main frontend UI
+frontend/package.json   Frontend scripts/dependencies
+```
+
+## Next stages
+
+- ATS gap analysis
+- Resume tailoring suggestions
+- Cover letter generation
+- Resume upload from frontend
+- Candidate profile editing from frontend
+- Export analysis as PDF/Markdown
