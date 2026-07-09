@@ -15,8 +15,6 @@ class Recommendation(str, Enum):
     MAYBE = "MAYBE"
     SKIP = "SKIP"
 
-
-
 class ResumeAnalysis(BaseModel):
     recommendation: Recommendation
     confidence_score: int
